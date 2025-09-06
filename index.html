@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Image Dataset Builder</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tagify/4.17.9/tagify.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tagify/4.17.9/tagify.css">
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --text: #333;
+      --card: #fff;
+      --accent: #4CAF50;
+    }
+    body.dark {
+      --bg: #1e1e1e;
+      --text: #f4f4f4;
+      --card: #2c2c2c;
+      --accent: #00c853;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .card {
+      background: var(--card);
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    }
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+    .icon {
+      margin-right: 8px;
+      color: var(--accent);
+    }
+    .toggle-group {
+      display: flex;
+      gap: 15px;
+    }
+    .toggle-group label {
+      flex: 1;
+      text-align: center;
+      padding: 12px;
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    input[type="radio"] { display: none; }
+    input[type="radio"]:checked + label {
+      background: var(--accent);
+      color: white;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    button {
+      width: 100%;
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 14px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover { opacity: 0.9; }
+    #loading {
+      display: none;
+      text-align: center;
+      margin: 20px 0;
+    }
+    #loading i {
+      font-size: 28px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+    #result {
+      display: none;
+      padding: 15px;
+      background: var(--card);
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    }
+    .dark-toggle {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      cursor: pointer;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="dark-toggle"><i class="fa fa-moon"></i></div>
+  <div class="container">
+    <h2>🚀 AI Image Dataset Builder</h2>
+    <form method="POST">
+      <!-- Dataset Type -->
+      <div class="card">
+        <h3><i class="fa fa-database icon"></i> Dataset Type</h3>
+        <div class="toggle-group">
+          <input type="radio" id="classification" name="mode" value="classification" checked>
+          <label for="classification">📂 Classification</label>
+          <input type="radio" id="detection" name="mode" value="detection">
+          <label for="detection">🎯 Object Detection (YOLO)</label>
+        </div>
+      </div>
+
+      <!-- Queries -->
+      <div class="card">
+        <h3><i class="fa fa-search icon"></i> Queries</h3>
+        <input name="queries" id="queries" placeholder="Type queries like cat, dog, car">
+      </div>
+
+      <!-- Number of Images -->
+      <div class="card">
+        <h3><i class="fa fa-camera icon"></i> Number of Images</h3>
+        <input type="number" name="num_images" value="50" min="10">
+      </div>
+
+      <button type="submit">⚡ Build & Download Dataset</button>
+    </form>
+
+    <!-- Loading -->
+    <div id="loading">
+      <i class="fa fa-spinner"></i>
+      <p>Building dataset... Please wait ⏳</p>
+    </div>
+
+    <!-- Result -->
+    <div id="result">
+      <h3>✅ Dataset Ready!</h3>
+      <p><strong>Classes:</strong> <span id="classes"></span></p>
+      <p><strong>Images per Class:</strong> <span id="images"></span></p>
+      <p><strong>Type:</strong> <span id="dtype"></span></p>
+      <a id="downloadBtn" href="#"><button>⬇️ Download ZIP</button></a>
+    </div>
+  </div>
+
+  <script>
+    // Dark Mode Toggle
+    document.querySelector('.dark-toggle').onclick = () => {
+      document.body.classList.toggle('dark');
+      let icon = document.querySelector('.dark-toggle i');
+      icon.classList.toggle('fa-moon');
+      icon.classList.toggle('fa-sun');
+    };
+
+    // Tagify Queries
+    new Tagify(document.querySelector("#queries"), {
+      delimiters: ",",
+      maxTags: 10,
+      dropdown: { enabled: 0 }
+    });
+
+    // Show loading on form submit
+    document.querySelector("form").onsubmit = () => {
+      document.getElementById("loading").style.display = "block";
+    };
+  </script>
+</body>
+</html>
